@@ -3,7 +3,7 @@ import os.path as osp
 from typing import Sequence
 from mmcv import Config, DictAction
 from mmcv.utils import mkdir_or_exist
-from simvg.apis import inference_model
+from c3vg.apis import inference_model
 
 
 def parse_args():

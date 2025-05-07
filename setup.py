@@ -8,7 +8,7 @@ def readme():
     return content
 
 
-version_file = 'simvg/version.py'
+version_file = 'c3vg/version.py'
 
 
 def get_version():
@@ -94,15 +94,15 @@ def parse_requirements(fname='requirements.txt', with_version=True):
 
 if __name__ == '__main__':
     setup(
-        name='SimVG',
+        name='C3VG',
         version=get_version(),
         description='',
         long_description=readme(),
         long_description_content_type='text/markdown',
-        author='sean zhuh',
-        author_email='sean.zhuh@gmail.com',
+        author='ming dai',
+        author_email='mingdai@seu.edu.cn',
         keywords='visual grounding',
-        url='https://github.com/sean-zhuh/SeqTR',
+        url='https://github.com/Dmmm1997/C3VG.git',
         packages=find_packages(exclude=('configs', 'tools')),
         include_package_data=True,
         classifiers=[

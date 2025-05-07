@@ -4,13 +4,13 @@ from argparse import ArgumentParser
 
 from mmdet.apis import inference_detector, show_result_pyplot
 from mmcv.utils import Config
-from simvg.models import build_model
-from simvg.utils import load_checkpoint
-from simvg.datasets.pipelines import Compose
-from simvg.datasets import extract_data
+from c3vg.models import build_model
+from c3vg.utils import load_checkpoint
+from c3vg.datasets.pipelines import Compose
+from c3vg.datasets import extract_data
 from mmcv.parallel import collate
 import os
-from simvg.core import imshow_expr_bbox, imshow_expr_mask
+from c3vg.core import imshow_expr_bbox, imshow_expr_mask
 import cv2
 import numpy as np
 from detectron2.utils.visualizer import GenericMask, VisImage

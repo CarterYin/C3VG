@@ -1,4 +1,3 @@
-/data/
 *.pyc
 SeqTR.egg-info/
 work_dir/
@@ -11,4 +10,6 @@ detectron2/
 detrex/
 wandb/
 pretrain_weights
+data/
 data
+.vscode/

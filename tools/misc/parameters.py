@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from simvg.models.heads.tgqs_kd_detr_head.transformer import DetrTransformer, DetrTransformerEncoder, DetrTransformerDecoder
+from c3vg.models.heads.tgqs_kd_detr_head.transformer import DetrTransformer, DetrTransformerEncoder, DetrTransformerDecoder
 
 
 def count_parameters(model):

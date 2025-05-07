@@ -1,15 +1,15 @@
 import argparse
 import os.path
 from functools import partial
-from simvg.datasets.builder import build_dataset
+from c3vg.datasets.builder import build_dataset
 import cv2
 import mmcv
 import numpy as np
 from mmcv import Config, DictAction
-from simvg.datasets import extract_data
+from c3vg.datasets import extract_data
 from mmcv.parallel import collate
 from torch.utils.data import DataLoader
-from simvg.utils.det_cam_visualizer import DetAblationLayer, DetBoxScoreTarget, DetCAMModel, DetCAMVisualizer, EigenCAM, FeatmapAM, reshape_transform
+from c3vg.utils.det_cam_visualizer import DetAblationLayer, DetBoxScoreTarget, DetCAMModel, DetCAMVisualizer, EigenCAM, FeatmapAM, reshape_transform
 from copy import deepcopy
 
 try:

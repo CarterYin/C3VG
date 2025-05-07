@@ -1,10 +1,10 @@
 import argparse
 import torch.distributed as dist
 
-from simvg.apis import evaluate_model, set_random_seed
-from simvg.datasets import build_dataset, build_dataloader
-from simvg.models import build_model, ExponentialMovingAverage
-from simvg.utils import get_root_logger, load_checkpoint, init_dist, is_main, load_pretrained_checkpoint
+from c3vg.apis import evaluate_model, set_random_seed
+from c3vg.datasets import build_dataset, build_dataloader
+from c3vg.models import build_model, ExponentialMovingAverage
+from c3vg.utils import get_root_logger, load_checkpoint, init_dist, is_main, load_pretrained_checkpoint
 
 from mmcv.runner import get_dist_info
 from mmcv.utils import Config, DictAction
