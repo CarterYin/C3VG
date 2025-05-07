@@ -136,7 +136,7 @@ bash tools/dist_test.sh configs/C3VG-Mix.py 2 --load-from [PATH_TO_CHECKPOINT_FI
 
 ### Models
 
-The trained model can be download in this [link]().
+The trained model can be download in this [link](https://seunic-my.sharepoint.cn/:u:/g/personal/230238525_seu_edu_cn/EbPvuyIkmixInc18SXSPxawBxlaiys343wTPtM28vCXhsQ?e=47Iw5Z).
 
 If you want to reproduce the result, download it and then run the following scripts:
 ```
