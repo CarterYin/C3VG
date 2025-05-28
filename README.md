@@ -118,21 +118,20 @@ You can use the following instruction for testing all type of models.
 bash tools/dist_test.sh configs/C3VG-Mix.py 2 --load-from [PATH_TO_CHECKPOINT_FILE]
 ```
 
-
 ## Models & Results
 
 ### Results
 
-| Split                  | DetAcc | MaskAcc | miou  | oiou  |
+| Split                  | DetAcc | MaskAcc | mIoU  | oIoU  |
 |------------------------|--------|---------|-------|-------|
-| val_refcoco_unc        | 92.51  | 92.35   | 81.37 | 80.89 |
-| testA_refcoco_unc      | 94.60  | 94.54   | 82.93 | 83.18 |
-| testB_refcoco_unc      | 88.71  | 88.36   | 79.12 | 77.86 |
-| val_refcocoplus_unc    | 87.44  | 87.31   | 77.05 | 74.68 |
-| testA_refcocoplus_unc  | 90.69  | 90.54   | 79.61 | 77.96 |
-| testB_refcocoplus_unc  | 81.42  | 80.91   | 72.40 | 68.95 |
-| val_refcocog_umd       | 87.68  | 85.58   | 76.34 | 74.43 |
-| test_refcocog_umd      | 88.31  | 87.26   | 77.10 | 76.39 |
+| val_refcoco_unc        | 92.40  | 92.23   | 81.42 | 80.95 |
+| testA_refcoco_unc      | 94.81  | 94.73   | 82.98 | 82.91 |
+| testB_refcoco_unc      | 89.63  | 89.10   | 79.86 | 79.03 |
+| val_refcocoplus_unc    | 87.21  | 87.05   | 77.00 | 74.32 |
+| testA_refcocoplus_unc  | 90.59  | 90.59   | 79.53 | 77.84 |
+| testB_refcocoplus_unc  | 81.61  | 81.39   | 72.90 | 69.29 |
+| val_refcocog_umd       | 87.85  | 85.62   | 76.20 | 74.85 |
+| test_refcocog_umd      | 88.19  | 87.16   | 77.05 | 76.43 |
 
 ### Models
 
@@ -140,7 +139,7 @@ The trained model can be download in this [link](https://seunic-my.sharepoint.cn
 
 If you want to reproduce the result, download it and then run the following scripts:
 ```
-bash tools/dist_test.sh [PATH_TO_CONFIG] --load-from [PATH_TO_CHECKPOINT_FILE]
+bash tools/dist_test.sh [PATH_TO_CONFIG] [GPU_NUMBER] --load-from [PATH_TO_CHECKPOINT_FILE]
 ```
 
 

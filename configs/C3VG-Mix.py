@@ -146,3 +146,4 @@ scheduler_config = dict(
 
 log_interval = 50
 threshold = 0.5
+seed = 1234

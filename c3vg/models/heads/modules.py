@@ -258,11 +258,6 @@ class BoxSegAttention(nn.Module):
             post_norm=True,
         )
 
-        # self.img_embedding = nn.Conv2d(input_channels, hidden_channels, 1)
-        # self.seg_embedding = nn.Conv2d(input_channels, hidden_channels, 1)
-        # self.seg_embedding = MLP(input_channels, hidden_channels, hidden_channels, 1)
-        # self.lan_embedding = MLP(input_channels, hidden_channels, hidden_channels, 1)
-        # self.box_embedding = MLP(input_channels, hidden_channels, hidden_channels, 1)
         self.boxsegpooler = BoxSegPooler()
         self.segaug = segaug
         self.box_query_embed = nn.Embedding(1, input_channels)
@@ -292,8 +287,6 @@ class BoxSegAttention(nn.Module):
 
         # TODO query key padding mask add
         box_seg_query = torch.cat((box_feat.unsqueeze(1), seg_feat), dim=1).transpose(0, 1)
-        # attn_mask_pos = seg.argmax(1).reshape(seg.shape[0], -1)
-        # attn_mask_pos = attn_mask_pos.float().masked_fill(attn_mask_pos == 1, float('-inf')).masked_fill(attn_mask_pos == 0, float(0.0))
         box_seg_pos_embed = torch.cat((torch.zeros_like(box_feat.unsqueeze(0)), seg_pos_embed), dim=0)
         box_seg_query = self.segboxSA(query=box_seg_query, key=None, value=None, query_pos=box_seg_pos_embed, query_key_padding_mask=None)
         box_embed, seg_embed = box_seg_query.split((1, seg_feat.shape[1]), dim=0)
@@ -305,9 +298,6 @@ class BoxSegAttention(nn.Module):
             value=img_embed,
             key_pos=seg_pos_embed,
             query_pos=box_embed,
-            # attn_masks=attn_mask_pos,
-            # query_key_padding_mask=~seg.argmax(1).reshape(seg.shape[0], -1).bool(),
-            # key_padding_mask=~seg.argmax(1).reshape(seg.shape[0], -1).bool(),  # ! add extra segmask
         )[-1]
         seg_hs = self.seg2img_crossattn(
             query=torch.zeros_like(seg_embed),
@@ -315,234 +305,11 @@ class BoxSegAttention(nn.Module):
             value=img_embed,
             key_pos=seg_pos_embed,
             query_pos=seg_embed,
-            # query_key_padding_mask=None,
-            # key_padding_mask=seg.argmax(1).reshape(seg.shape[0], -1).bool(),  # ! add extra segmask
         )[-1]
 
-        # ! type 6 boxalign box-seg(B,1+256,C) SA(box-seg) CA(box to img) CA(seg to img)
-        # B,_, H, W = img_feat.shape
-        # # # img_embedding
-        # img_feat = self.img_embedding(img_feat)
-        # img_embed = img_feat.view(img_feat.shape[0], img_feat.shape[1], -1).permute(2, 0, 1)
-
-        # # # box seg embedding
-        # # box_feat, [seg_feat_pos, seg_feat_neg] = self.boxsegpooler(bbox, seg, img_feat)
-
-        # img_masks, seg_pos_embed = self.x_mask_pos_enc(img_feat, img_feat.shape[-2:])
-        # seg_pos_embed = seg_pos_embed.view(seg_pos_embed.shape[0], seg_pos_embed.shape[1], -1).permute(2, 0, 1)
-
-        # # TODO query key padding mask add
-        # box_seg_query = torch.cat((box_feat.unsqueeze(1), seg_feat), dim=1).transpose(0, 1)
-        # # attn_mask_pos = seg.argmax(1).reshape(seg.shape[0], -1)
-        # # attn_mask_pos = attn_mask_pos.float().masked_fill(attn_mask_pos == 1, float('-inf')).masked_fill(attn_mask_pos == 0, float(0.0))
-        # box_seg_pos_embed = torch.cat((torch.zeros_like(box_feat.unsqueeze(0)), seg_pos_embed), dim=0)
-        # box_seg_query = self.segboxSA(query=box_seg_query, key=None, value=None, query_pos=box_seg_pos_embed, query_key_padding_mask=None)
-        # box_embed, seg_embed = box_seg_query.split((1, seg_feat.shape[1]), dim=0)
-        # box_hs = self.box2img_crossattn(
-        #     query=torch.zeros_like(box_embed),
-        #     key=img_embed,
-        #     value=img_embed,
-        #     key_pos=seg_pos_embed,
-        #     query_pos=box_embed,
-        #     # attn_masks=attn_mask_pos,
-        #     # query_key_padding_mask=~seg.argmax(1).reshape(seg.shape[0], -1).bool(),
-        #     # key_padding_mask=~seg.argmax(1).reshape(seg.shape[0], -1).bool(),  # ! add extra segmask
-        # )[-1]
-        # seg_hs = self.seg2img_crossattn(
-        #     query=torch.zeros_like(seg_embed),
-        #     key=img_embed,
-        #     value=img_embed,
-        #     key_pos=seg_pos_embed,
-        #     query_pos=seg_embed,
-        #     # query_key_padding_mask=None,
-        #     # key_padding_mask=seg.argmax(1).reshape(seg.shape[0], -1).bool(),  # ! add extra segmask
-        # )[-1]
 
         second_seg_mask = seg_hs.permute(1, 2, 0).reshape(B, -1, H, W)
         second_bbox = box_hs.transpose(0, 1).reshape(B, -1)
-
-        return second_bbox, second_seg_mask
-
-    def forward_debug(self, bbox, seg, img_feat, lan_feat=None, lan_mask=None):
-        # bbox_embed = bbox.view(bbox.shape[0], 1, -1)
-        # seg_embed = seg.view(seg.shape[0], seg.shape[1], -1).transpose(1, 2)
-        # bbox_embed = self.bbox_embedding(bbox_embed).transpose(0, 1)
-        # seg_embed = self.seg_embedding(seg_embed).transpose(0, 1)
-        # img_embed = self.img_embedding(img_feat.view(img_feat.shape[0], img_feat.shape[1], -1).transpose(1, 2)).transpose(0, 1)
-
-        # ! type 1 SA（bbox-seg concat）
-        # img_masks, seg_pos_embed = self.x_mask_pos_enc(seg, seg.shape[-2:])
-        # seg_pos_embed = seg_pos_embed.view(seg_pos_embed.shape[0], seg_pos_embed.shape[1], -1).transpose(0, 1)
-        # box_pos_embed = torch.zeros_like(bbox_embed)
-        # concat_pos_embed = torch.cat((box_pos_embed, seg_pos_embed), dim=0)
-        # concat_boxseg_embed = torch.cat((bbox_embed, seg_embed), dim=0)
-        # hs = self.segboxSA(query=concat_boxseg_embed, key=None, value=None, query_pos=concat_pos_embed, query_key_padding_mask=None)
-        # box_hs, seg_hs = hs[-1].split((bbox_embed.shape[0], seg_embed.shape[0]), dim=0)
-
-        # ! type 2 SA（bbox-seg concat）+CA（bbox-seg to image）
-        # img_masks, seg_pos_embed = self.x_mask_pos_enc(seg, seg.shape[-2:])
-        # concat_boxseg_embed = torch.cat((bbox_embed, seg_embed), dim=0)
-        # seg_pos_embed = seg_pos_embed.view(seg_pos_embed.shape[0], seg_pos_embed.shape[1], -1).transpose(0, 1)
-        # box_pos_embed = torch.zeros_like(bbox_embed)
-        # concat_pos_embed = torch.cat((box_pos_embed, seg_pos_embed), dim=0)
-        # concat_boxseg_embed = torch.cat((bbox_embed, seg_embed), dim=0)
-        # concat_boxseg_embed = self.segboxSA(query=concat_boxseg_embed, key=None, value=None, query_pos=concat_pos_embed, query_key_padding_mask=None)
-        # hs = self.segboxCA(query=torch.zeros_like(concat_boxseg_embed), key=img_embed, value=img_embed, key_pos=seg_pos_embed,query_pos=concat_boxseg_embed, query_key_padding_mask=None)
-        # box_hs, seg_hs = hs[-1].split((bbox_embed.shape[0], seg_embed.shape[0]), dim=0)
-
-        # ! type 3 CA(bbox to seg) CA(seg to bbox-img)
-        #  box-to-seg cross attention
-        # img_masks, seg_pos_embed = self.x_mask_pos_enc(seg, seg.shape[-2:])
-        # seg_pos_embed = seg_pos_embed.view(seg_pos_embed.shape[0], seg_pos_embed.shape[1], -1).transpose(0, 1)
-        # box_hs = self.box2seg_crossattn(
-        #     query=torch.zeros_like(bbox_embed),
-        #     key=seg_embed,
-        #     value=seg_embed,
-        #     key_pos=seg_pos_embed,
-        #     query_pos=bbox_embed,
-        #     key_padding_mask=img_masks.view(img_masks.shape[0], -1).bool(),
-        # )[-1]
-        # # seg-to-box cross attention
-        # # box_pos_embed = self.position_embedding_1d(bbox_embed.transpose(0, 1)).unsqueeze(0).repeat(bbox.shape[0], 1, 1).permute(1, 0, 2).cuda()
-        # concat_boximg_embed = torch.cat((bbox_embed, img_embed), dim=0)
-        # box_pos_embed = torch.zeros_like(bbox_embed)
-        # concat_pos_embed = torch.cat((box_pos_embed, seg_pos_embed), dim=0)
-        # seg_hs = self.seg2box_crossattn(
-        #     query=torch.zeros_like(seg_embed),
-        #     key=concat_boximg_embed,
-        #     value=concat_boximg_embed,
-        #     key_pos=concat_pos_embed,
-        #     query_pos=seg_embed,
-        #     key_padding_mask=None,
-        # )[-1]
-
-        # ! type 4 CA(bbox to seg) CA(img to bbox-seg)
-        #  box-to-seg cross attention
-        # img_masks, seg_pos_embed = self.x_mask_pos_enc(seg, seg.shape[-2:])
-        # seg_pos_embed = seg_pos_embed.view(seg_pos_embed.shape[0], seg_pos_embed.shape[1], -1).transpose(0, 1)
-        # box_hs = self.box2seg_crossattn(
-        #     query=torch.zeros_like(bbox_embed),
-        #     key=seg_embed,
-        #     value=seg_embed,
-        #     key_pos=seg_pos_embed,
-        #     query_pos=bbox_embed,
-        #     key_padding_mask=img_masks.view(img_masks.shape[0], -1).bool(),
-        # )[-1]
-        # box_pos_embed = torch.zeros_like(bbox_embed)
-        # concat_pos_embed = torch.cat((box_pos_embed, seg_pos_embed), dim=0)
-        # concat_boxseg_embed = torch.cat((bbox_embed, seg_embed), dim=0)
-        # seg_hs = self.segboxCA(query=torch.zeros_like(img_embed), key=concat_boxseg_embed, value=concat_boxseg_embed, key_pos=concat_pos_embed,query_pos=img_embed, query_key_padding_mask=None)[-1]
-
-        # ! type 5 box align pool (B,C) seg mask pool (B,C) box-seg concat(B,2,C) as query CA(query to image)
-        # img_embed = img_feat.view(img_feat.shape[0], img_feat.shape[1], -1).permute(2, 0, 1)
-        # img_masks, seg_pos_embed = self.x_mask_pos_enc(seg, seg.shape[-2:])
-        # seg_pos_embed = seg_pos_embed.view(seg_pos_embed.shape[0], seg_pos_embed.shape[1], -1).permute(2, 0, 1)
-        # box_feat, [seg_feat_pos, seg_feat_neg] = self.boxsegpooler(bbox, seg, img_feat)
-        # box_seg_query = torch.stack((box_feat, seg_feat_pos), dim=1).transpose(0, 1)
-        # hs_query = self.segboxCA(
-        #     query=torch.zeros_like(box_seg_query),
-        #     key=img_embed,
-        #     value=img_embed,
-        #     key_pos=seg_pos_embed,
-        #     query_pos=box_seg_query,
-        #     # query_key_padding_mask=None,
-        #     key_padding_mask=seg.argmax(1).reshape(seg.shape[0], -1).bool(),
-        # )
-        # box_hs, seg_hs = hs_query[-1].split((1, 1), dim=0)
-        # seg_hs = seg_hs * img_embed
-
-        # ! type 6 boxalign box-seg(B,1+256,C) SA(box-seg) CA(box to img) CA(seg to img)
-        # # img_embedding
-        img_feat = self.img_embedding(img_feat)
-        img_embed = img_feat.view(img_feat.shape[0], img_feat.shape[1], -1).permute(2, 0, 1)
-
-        # box seg embedding
-        box_feat, [seg_feat_pos, seg_feat_neg] = self.boxsegpooler(bbox, seg, img_feat)
-
-        img_masks, seg_pos_embed = self.x_mask_pos_enc(img_feat, img_feat.shape[-2:])
-        seg_pos_embed = seg_pos_embed.view(seg_pos_embed.shape[0], seg_pos_embed.shape[1], -1).permute(2, 0, 1)
-
-        # TODO query key padding mask add
-        box_seg_query = torch.cat((box_feat.unsqueeze(1), seg_feat_pos), dim=1).transpose(0, 1)
-        # attn_mask_pos = seg.argmax(1).reshape(seg.shape[0], -1)
-        # attn_mask_pos = attn_mask_pos.float().masked_fill(attn_mask_pos == 1, float('-inf')).masked_fill(attn_mask_pos == 0, float(0.0))
-        box_seg_pos_embed = torch.cat((torch.zeros_like(box_feat.unsqueeze(0)), seg_pos_embed), dim=0)
-        box_seg_query = self.segboxSA(query=box_seg_query, key=None, value=None, query_pos=box_seg_pos_embed, query_key_padding_mask=None)
-        box_embed, seg_embed = box_seg_query.split((1, seg_feat_pos.shape[1]), dim=0)
-        box_hs = self.box2img_crossattn(
-            query=torch.zeros_like(box_embed),
-            key=img_embed,
-            value=img_embed,
-            key_pos=seg_pos_embed,
-            query_pos=box_embed,
-            # attn_masks=attn_mask_pos,
-            # query_key_padding_mask=~seg.argmax(1).reshape(seg.shape[0], -1).bool(),
-            # key_padding_mask=~seg.argmax(1).reshape(seg.shape[0], -1).bool(),  # ! add extra segmask
-        )[-1]
-        seg_hs = self.seg2img_crossattn(
-            query=torch.zeros_like(seg_embed),
-            key=img_embed,
-            value=img_embed,
-            key_pos=seg_pos_embed,
-            query_pos=seg_embed,
-            # query_key_padding_mask=None,
-            # key_padding_mask=seg.argmax(1).reshape(seg.shape[0], -1).bool(),  # ! add extra segmask
-        )[-1]
-
-        # ! type 7 boxalign box-seg(B,1+256,C) SA(box-seg) CA(box2text, seg2text) CA(box2img, seg2img)
-        # # img_embedding
-        # img_feat = self.img_embedding(img_feat)
-        # lan_feat = self.lan_embedding(lan_feat)
-        # img_embed = img_feat.view(img_feat.shape[0], img_feat.shape[1], -1).permute(2, 0, 1)
-
-        # # boxalign segmasked
-        # box_feat, [seg_feat_pos, seg_feat_neg] = self.boxsegpooler(bbox, seg, img_feat)
-        # # pos embedding and masks
-        # img_masks, seg_pos_embed = self.x_mask_pos_enc(img_feat, img_feat.shape[-2:])
-        # seg_pos_embed = seg_pos_embed.view(seg_pos_embed.shape[0], seg_pos_embed.shape[1], -1).permute(2, 0, 1)
-        # box_seg_pos_embed = torch.cat((torch.zeros_like(box_feat.unsqueeze(0)), seg_pos_embed), dim=0)
-        # text_pos_embed = self.position_embedding_1d(lan_feat).unsqueeze(0).repeat(lan_feat.shape[0], 1, 1).permute(1, 0, 2).cuda()
-
-        # # box-seg(B,1+256,C)
-        # box_seg_query = torch.cat((box_feat.unsqueeze(1), seg_feat_pos), dim=1).transpose(0, 1)
-        # box_seg_query = self.segboxSA(query=box_seg_query, key=None, value=None, query_pos=box_seg_pos_embed, query_key_padding_mask=None)
-        # box_embed, seg_embed = box_seg_query.split((1, seg_feat_pos.shape[1]), dim=0)
-        # # box2text, seg2text
-        # box_embed = self.box2text_crossattn(
-        #     query=torch.zeros_like(box_embed),
-        #     key=lan_feat.transpose(0, 1),
-        #     value=lan_feat.transpose(0, 1),
-        #     key_pos=text_pos_embed,
-        #     query_pos=box_embed,
-        #     key_padding_mask=lan_mask.bool(),
-        # )[-1]
-        # seg_embed = self.seg2text_crossattn(
-        #     query=torch.zeros_like(seg_embed),
-        #     key=lan_feat.transpose(0, 1),
-        #     value=lan_feat.transpose(0, 1),
-        #     key_pos=text_pos_embed,
-        #     query_pos=seg_embed,
-        #     key_padding_mask=lan_mask.bool(),
-        # )[-1]
-
-        # # box2img, seg2img
-        # box_hs = self.box2img_crossattn(
-        #     query=torch.zeros_like(box_embed),
-        #     key=img_embed,
-        #     value=img_embed,
-        #     key_pos=seg_pos_embed,
-        #     query_pos=box_embed,
-        # )[-1]
-        # seg_hs = self.seg2img_crossattn(
-        #     query=torch.zeros_like(seg_embed),
-        #     key=img_embed,
-        #     value=img_embed,
-        #     key_pos=seg_pos_embed,
-        #     query_pos=seg_embed,
-        # )[-1]
-
-        second_seg_mask = seg_hs.permute(1, 2, 0).reshape(seg.shape[0], -1, seg.shape[-2], seg.shape[-1])
-        second_bbox = box_hs.transpose(0, 1).reshape(bbox.shape[0], -1)
 
         return second_bbox, second_seg_mask
 
@@ -622,12 +389,6 @@ class UnifiedInteractionModule(nn.Module):
             return_intermediate=False,
             post_norm=True,
         )
-
-        # self.img_embedding = nn.Conv2d(input_channels, hidden_channels, 1)
-        # self.seg_embedding = nn.Conv2d(input_channels, hidden_channels, 1)
-        # self.seg_embedding = MLP(input_channels, hidden_channels, hidden_channels, 1)
-        # self.lan_embedding = MLP(input_channels, hidden_channels, hidden_channels, 1)
-        # self.box_embedding = MLP(input_channels, hidden_channels, hidden_channels, 1)
         self.box_weights = box_weights
         self.boxsegpooler = BoxSegPooler()
         self.enable_box_coorinate_embed = enable_box_coorinate_embed
@@ -684,74 +445,6 @@ class UnifiedInteractionModule(nn.Module):
             box_feat = self.box_linear(box_feat)
 
         lan_embed = lan_feat.transpose(0, 1)
-
-        # # box2text, seg2text
-        # box_embed = self.box2text_crossattn(
-        #     query=box_embed,
-        #     key=lan_feat.transpose(0, 1),
-        #     value=lan_feat.transpose(0, 1),
-        #     # key_pos=text_pos_embed,
-        #     # query_pos=box_embed,
-        #     key_padding_mask=lan_mask.bool(),
-        # )[-1]
-        # seg_embed = self.seg2text_crossattn(
-        #     query=seg_embed,
-        #     key=lan_feat.transpose(0, 1),
-        #     value=lan_feat.transpose(0, 1),
-        #     # key_pos=text_pos_embed,
-        #     # query_pos=seg_embed,
-        #     key_padding_mask=lan_mask.bool(),
-        # )[-1]
-        # ! type 1
-        # img_embed = unified_img_feat.view(unified_img_feat.shape[0], unified_img_feat.shape[1], -1).permute(2, 0, 1)
-        # box_embed = box_feat.unsqueeze(1).transpose(0, 1)
-        # seg_embed = seg_feat.flatten(2).permute(2, 0, 1)
-        # box_hs = self.box2img_crossattn(
-        #     query=box_embed,
-        #     key=img_embed,
-        #     value=img_embed,
-        #     key_pos=seg_pos_embed,
-        #     # query_pos=box_embed,
-        #     # attn_masks=attn_mask_pos,
-        #     # query_key_padding_mask=~seg.argmax(1).reshape(seg.shape[0], -1).bool(),
-        #     # key_padding_mask=~seg.argmax(1).reshape(seg.shape[0], -1).bool(),  # ! add extra segmask
-        # )[-1]
-
-        # seg_hs = self.seg2img_crossattn(
-        #     query=seg_embed,
-        #     key=img_embed,
-        #     value=img_embed,
-        #     key_pos=seg_pos_embed,
-        #     query_pos=seg_pos_embed,
-        #     # query_key_padding_mask=None,
-        #     # key_padding_mask=seg.argmax(1).reshape(seg.shape[0], -1).bool(),  # ! add extra segmask
-        # )[-1]
-
-        # ! type 2 concat SA
-        # box_embed = box_feat.unsqueeze(1).transpose(0, 1)
-        # seg_embed = torch.cat((unified_img_feat, img_feat), dim=1) #(B,2C,H, W)
-        # seg_embed = seg_embed.flatten(2).transpose(1,2) # (B,Ni,2C)
-        # seg_embed = self.seg_linear(seg_embed) # (B,Ni,C)
-        # seg_embed = seg_embed.transpose(0,1)# (Ni,B,C)
-
-        # box_hs = self.box2img_crossattn(
-        #     query=box_embed,
-        #     key=seg_embed,
-        #     value=seg_embed,
-        #     key_pos=seg_pos_embed,
-        #     # query_pos=box_embed,
-        #     # attn_masks=attn_mask_pos,
-        #     # query_key_padding_mask=~seg.argmax(1).reshape(seg.shape[0], -1).bool(),
-        #     # key_padding_mask=~seg.argmax(1).reshape(seg.shape[0], -1).bool(),  # ! add extra segmask
-        # )[-1]
-
-        # seg_hs = self.sa(
-        #     query=seg_embed,
-        #     key=None,
-        #     value=None,
-        #     query_pos=seg_pos_embed,
-        #     # query_key_padding_mask=img_masks,
-        # )
 
         # ! type 3 add text interaction concat SA
         box_embed = box_feat.unsqueeze(1).transpose(0, 1)
@@ -830,48 +523,3 @@ class UnifiedInteractionModule(nn.Module):
         if "box" in self.weighted_compose:
             extra["box_feat"] = box_heatmap
         return second_bbox, second_seg_mask, extra
-
-    def forward_debug(self, bbox, seg, img_feat, lan_feat=None, lan_mask=None):
-
-        # ! type 6 boxalign box-seg(B,1+256,C) SA(box-seg) CA(box to img) CA(seg to img)
-        # # img_embedding
-        img_feat = self.img_embedding(img_feat)
-        img_embed = img_feat.view(img_feat.shape[0], img_feat.shape[1], -1).permute(2, 0, 1)
-
-        # box seg embedding
-        box_feat, [seg_feat_pos, seg_feat_neg] = self.boxsegpooler(bbox, seg, img_feat)
-
-        img_masks, seg_pos_embed = self.x_mask_pos_enc(img_feat, img_feat.shape[-2:])
-        seg_pos_embed = seg_pos_embed.view(seg_pos_embed.shape[0], seg_pos_embed.shape[1], -1).permute(2, 0, 1)
-
-        # TODO query key padding mask add
-        box_seg_query = torch.cat((box_feat.unsqueeze(1), seg_feat_pos), dim=1).transpose(0, 1)
-        # attn_mask_pos = seg.argmax(1).reshape(seg.shape[0], -1)
-        # attn_mask_pos = attn_mask_pos.float().masked_fill(attn_mask_pos == 1, float('-inf')).masked_fill(attn_mask_pos == 0, float(0.0))
-        box_seg_pos_embed = torch.cat((torch.zeros_like(box_feat.unsqueeze(0)), seg_pos_embed), dim=0)
-        box_seg_query = self.segboxSA(query=box_seg_query, key=None, value=None, query_pos=box_seg_pos_embed, query_key_padding_mask=None)
-        box_embed, seg_embed = box_seg_query.split((1, seg_feat_pos.shape[1]), dim=0)
-        box_hs = self.box2img_crossattn(
-            query=torch.zeros_like(box_embed),
-            key=img_embed,
-            value=img_embed,
-            key_pos=seg_pos_embed,
-            query_pos=box_embed,
-            # attn_masks=attn_mask_pos,
-            # query_key_padding_mask=~seg.argmax(1).reshape(seg.shape[0], -1).bool(),
-            # key_padding_mask=~seg.argmax(1).reshape(seg.shape[0], -1).bool(),  # ! add extra segmask
-        )[-1]
-        seg_hs = self.seg2img_crossattn(
-            query=torch.zeros_like(seg_embed),
-            key=img_embed,
-            value=img_embed,
-            key_pos=seg_pos_embed,
-            query_pos=seg_embed,
-            # query_key_padding_mask=None,
-            # key_padding_mask=seg.argmax(1).reshape(seg.shape[0], -1).bool(),  # ! add extra segmask
-        )[-1]
-
-        second_seg_mask = seg_hs.permute(1, 2, 0).reshape(seg.shape[0], -1, seg.shape[-2], seg.shape[-1])
-        second_bbox = box_hs.transpose(0, 1).reshape(bbox.shape[0], -1)
-
-        return second_bbox, second_seg_mask

@@ -10,7 +10,7 @@
       "justMyCode": true,
       "cwd": "${workspaceFolder}",
       "args": [
-        "configs/unimodel/ablation/ab_lcc/baseline.py",
+        "configs/seed/C3VG-6666.py",
         // "configs/unimodel/pretrain/uni-256-p16-mixnogoogle.py",
         "--work-dir",
         "work_dir/debug/test",
@@ -18,7 +18,7 @@
         "True",
         // "--load-from", "work_dir/beit3_multibranch/(3-9)decodergt#0decoderpredict#0tokengt_30ep_noweight/20240310_095533/det_best.pth"
       ],
-      "env": { "CUDA_VISIBLE_DEVICES": "0" },
+      "env": { "CUDA_VISIBLE_DEVICES": "1" },
     },
     {
       "name": "test.py",
