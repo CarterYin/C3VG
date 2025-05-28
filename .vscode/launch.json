@@ -1,0 +1,81 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "train.py",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/tools/train.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "cwd": "${workspaceFolder}",
+      "args": [
+        "configs/seed/C3VG-6666.py",
+        // "configs/unimodel/pretrain/uni-256-p16-mixnogoogle.py",
+        "--work-dir",
+        "work_dir/debug/test",
+        "--debug",
+        "True",
+        // "--load-from", "work_dir/beit3_multibranch/(3-9)decodergt#0decoderpredict#0tokengt_30ep_noweight/20240310_095533/det_best.pth"
+      ],
+      "env": { "CUDA_VISIBLE_DEVICES": "1" },
+    },
+    {
+      "name": "test.py",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/tools/test.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "args": [
+        "work_dir/segmentation/pretrain/beit3-mask-seg_512_mixcoco/20240505_141258/20240505_141258_beit3-mask-seg_512_mixcoco.py",
+        "--load-from",
+        "work_dir/segmentation/pretrain/beit3-mask-seg_512_mixcoco/20240505_141258/segm_best.pth"
+      ]
+    },
+    {
+      "name": "inference.py",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/tools/inference.py",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "args": [
+        // "--output-dir",
+        // "visualization/inference"
+      ]
+    },
+    {
+      "name": "this",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+    },
+    {
+      "name": "gradcam",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/tools/misc/vis_cam.py",
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "gradcam_2",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/tools/misc/heatmap.py",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "demo",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/tools/demo.py",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}
