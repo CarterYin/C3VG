@@ -121,7 +121,7 @@ bash tools/dist_test.sh configs/C3VG-Mix.py 2 --load-from [PATH_TO_CHECKPOINT_FI
 
 ## Models & Results
 
-Note: Due to the unavailability of the original paper’s pretrained weights, we retrained an additional version. The results may exhibit slight variations compared to those reported in the original paper. For reference, we also provide the original [training logs](https://seunic-my.sharepoint.cn/:u:/g/personal/230238525_seu_edu_cn/EevQmBrMImBDnzMPbDVo7foBRdFVmYNMRJwI0xYvtj9MtA?e=y4gz9j) from the paper’s authors.
+Note: Due to the unavailability of the original paper’s pretrained weights, we retrained an additional version. The results may exhibit slight variations compared to those reported in the original paper. For reference, we also provide the paper's [training logs](https://seunic-my.sharepoint.cn/:u:/g/personal/230238525_seu_edu_cn/EevQmBrMImBDnzMPbDVo7foBRdFVmYNMRJwI0xYvtj9MtA?e=y4gz9j).
 
 ### Models
 
