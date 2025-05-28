@@ -92,7 +92,7 @@ mkdir pretrain_weights
 ```
 Place the BEiT checkpoints and tokenizer within this directory.
 
-The final directory structure of SimVG should resemble the following:
+The final directory structure of C3VG should resemble the following:
 ```
 C3VG
 ├── configs
