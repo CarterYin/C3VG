@@ -22,8 +22,9 @@ SouthEast University, Tencent, Zhejiang University
 
 ## Updates
 
+- **2025.05.28: The code and model are released.**
 - **2024.10.10: Our work has been accepted by AAAI 2025.**
-- **2025.05.07: The code and model are released.**
+
 
 ## Abstract
 
@@ -48,7 +49,7 @@ torchvision=0.15.0
 
 ### Prerequisites
 
-```
+```bash
 pip install -r requirements.txt
 ```
 <!-- Our code depends on parts of [detrex](https://detrex.readthedocs.io/en/latest/tutorials/Installation.html) and [detectron2](https://github.com/facebookresearch/detectron2), so you need to install and compile them.
@@ -106,7 +107,7 @@ C3VG
 
 We train C3VG on a 2 RTX4090 GPU with 24 GB memory. The following script performs the training:
 
-```
+```bash
 bash tools/dist_train.sh configs/C3VG-Mix.py 2
 ```
 
@@ -114,33 +115,40 @@ bash tools/dist_train.sh configs/C3VG-Mix.py 2
 
 You can use the following instruction for testing all type of models.
 
-```
+```bash
 bash tools/dist_test.sh configs/C3VG-Mix.py 2 --load-from [PATH_TO_CHECKPOINT_FILE]
 ```
 
 ## Models & Results
 
-### Results
-
-| Split                  | DetAcc | MaskAcc | mIoU  | oIoU  |
-|------------------------|--------|---------|-------|-------|
-| val_refcoco_unc        | 92.40  | 92.23   | 81.42 | 80.95 |
-| testA_refcoco_unc      | 94.81  | 94.73   | 82.98 | 82.91 |
-| testB_refcoco_unc      | 89.63  | 89.10   | 79.86 | 79.03 |
-| val_refcocoplus_unc    | 87.21  | 87.05   | 77.00 | 74.32 |
-| testA_refcocoplus_unc  | 90.59  | 90.59   | 79.53 | 77.84 |
-| testB_refcocoplus_unc  | 81.61  | 81.39   | 72.90 | 69.29 |
-| val_refcocog_umd       | 87.85  | 85.62   | 76.20 | 74.85 |
-| test_refcocog_umd      | 88.19  | 87.16   | 77.05 | 76.43 |
+Note: Due to the unavailability of the original paper’s pretrained weights, we retrained an additional version. The results may exhibit slight variations compared to those reported in the original paper. For reference, we also provide the original [training logs](https://seunic-my.sharepoint.cn/:u:/g/personal/230238525_seu_edu_cn/EevQmBrMImBDnzMPbDVo7foBRdFVmYNMRJwI0xYvtj9MtA?e=y4gz9j) from the paper’s authors.
 
 ### Models
 
-The trained model can be download in this [link](https://seunic-my.sharepoint.cn/:u:/g/personal/230238525_seu_edu_cn/EbPvuyIkmixInc18SXSPxawBxlaiys343wTPtM28vCXhsQ?e=47Iw5Z).
+The trained model can be download in this [link](https://seunic-my.sharepoint.cn/:u:/g/personal/230238525_seu_edu_cn/EevQmBrMImBDnzMPbDVo7foBRdFVmYNMRJwI0xYvtj9MtA?e=y4gz9j).
 
 If you want to reproduce the result, download it and then run the following scripts:
-```
+```bash
 bash tools/dist_test.sh [PATH_TO_CONFIG] [GPU_NUMBER] --load-from [PATH_TO_CHECKPOINT_FILE]
 ```
+
+### Results
+
+| Split                  | DetAcc (paper) | MaskAcc | mIoU (paper)  | oIoU (paper)  |
+|------------------------|      --------  |---------|   -------     |    -------    |
+| val_refcoco_unc        | 92.40 (92.51)  | 92.23   | 81.42 (81.37) | 80.95 (80.89) |
+| testA_refcoco_unc      | 94.81 (94.60)  | 94.73   | 82.98 (82.93) | 82.91 (83.18) |
+| testB_refcoco_unc      | 89.63 (88.71)  | 89.10   | 79.86 (79.12) | 79.03 (77.86) |
+| val_refcocoplus_unc    | 87.21 (87.44)  | 87.05   | 77.00 (77.05) | 74.32 (74.68) |
+| testA_refcocoplus_unc  | 90.59 (90.69)  | 90.59   | 79.53 (79.61) | 77.84 (77.96) |
+| testB_refcocoplus_unc  | 81.61 (81.42)  | 81.39   | 72.90 (72.40) | 69.29 (68.95) |
+| val_refcocog_umd       | 87.85 (87.68)  | 85.62   | 76.20 (76.34) | 74.85 (74.43) |
+| test_refcocog_umd      | 88.19 (88.31)  | 87.16   | 77.05 (77.10) | 76.43 (76.39) |
+
+
+
+### Acknowledge
+This repository partially builds upon the codebases of [SimVG](https://github.com/Dmmm1997/SimVG/) and [BEiT-3](https://github.com/microsoft/unilm/tree/master/beit3).
 
 
 ## Citation
