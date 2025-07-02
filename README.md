@@ -5,7 +5,7 @@
 SouthEast University, Tencent, Zhejiang University
 
 <a href='https://arxiv.org/pdf/2501.06710'><img src='https://img.shields.io/badge/ArXiv-2501.06710-red'></a>
-
+ 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/multi-task-visual-grounding-with-coarse-to/referring-expression-comprehension-on-refcoco)](https://paperswithcode.com/sota/referring-expression-comprehension-on-refcoco?p=multi-task-visual-grounding-with-coarse-to)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/multi-task-visual-grounding-with-coarse-to/referring-expression-segmentation-on-refcoco-8)](https://paperswithcode.com/sota/referring-expression-segmentation-on-refcoco-8?p=multi-task-visual-grounding-with-coarse-to)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/multi-task-visual-grounding-with-coarse-to/referring-expression-segmentation-on-refcoco-9)](https://paperswithcode.com/sota/referring-expression-segmentation-on-refcoco-9?p=multi-task-visual-grounding-with-coarse-to)
