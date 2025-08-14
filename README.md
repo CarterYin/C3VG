@@ -25,7 +25,21 @@ pip install mmdet==2.28.1 numpy pillow opencv-python pycocotools transformers \
 ### 安装 detectron2（用于可视化 GenericMask/VisImage）
 python -m pip install 'git+https://github.com/facebookresearch/detectron2.git'
 
+## **实际上在环境设置的时候**
+- 遇到了诸多问题，包冲突非常多，这里选择使用环境文件c3vg-env.yml，便于复现环境：
+```bash
+conda env create -f /home/yinchao/C3VG/c3vg-env.yml
+```
 
+**注意导出环境文件的命令如下示例**
+```bash
+conda env export -n c3vg > /home/yinchao/C3VG/c3vg-env.yml
+```
+**注意导出并保存环境安装清单的命令如下示例**
+```bash
+cd /home/yinchao/C3VG && conda list -n c3vg > c3vg-conda-list.txt && /home/yinchao/anaconda3/envs/c3vg/bin/pip freeze > c3vg-pip-freeze.txt
+```
+- 而c3vg-pip-freeze.txt文件包含了环境所安装的所有内容。
 
 ## 创建文件夹并下载文件
 ```bash
@@ -37,7 +51,7 @@ cd /home/yinchao/C3VG/pretrain_weights
 ```bash
 wget https://github.com/addf400/files/releases/download/beit3/beit3.spm
 ```
-在本地电脑安装
+在本地电脑安装model.pth文件：
 ```
 https://seunic-my.sharepoint.cn/personal/230238525_seu_edu_cn/_layouts/15/onedrive.aspx?id=%2Fpersonal%2F230238525%5Fseu%5Fedu%5Fcn%2FDocuments%2FC3VG%2Dretrain%2Ezip&parent=%2Fpersonal%2F230238525%5Fseu%5Fedu%5Fcn%2FDocuments&ga=1
 ```
@@ -46,7 +60,7 @@ yinchao@yinchaodeMacBook-Air ~ % cd Desktop
 yinchao@yinchaodeMacBook-Air Desktop % scp model.pth yinchao@iaaccn44:/home/yinchao/C3VG/pretrain_weights
 ```
 
-下面不必要安装
+下面若安装了model.pth，则不必要安装
 ```bash
 wget https://github.com/addf400/files/releases/download/beit3/beit3_large_patch16_224.pth
 ```
