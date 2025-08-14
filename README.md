@@ -61,3 +61,13 @@ python demo.py \
   --checkpoint /home/yinchao/C3VG/pretrain_weights/model.pth \
   --device cpu
 ```
+
+```bash
+python demo.py \
+  --input_image_path /home/yinchao/C3VG/images/dear.jpg \
+  --prompt "a dear" \
+  --output_image_path /home/yinchao/C3VG/vis/vis_dear.jpg \
+  --config /home/yinchao/C3VG/configs/C3VG-Mix.py \
+  --checkpoint /home/yinchao/C3VG/pretrain_weights/model.pth \
+  --device cpu
+```
