@@ -47,7 +47,10 @@ def extract_data(inputs):
         else:
             device = get_device(data)
             if device == -1:
-                data = cpu_to_gpu(data[0], torch.cuda.current_device())
+                if torch.cuda.is_available():
+                    data = cpu_to_gpu(data[0], torch.cuda.current_device())
+                else:
+                    data = data[0]
             new_inputs[key] = data
     return new_inputs
 

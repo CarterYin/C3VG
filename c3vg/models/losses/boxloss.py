@@ -38,7 +38,7 @@ class BoxLoss(nn.Module):
         :param gt_box:              (center_x, center_y, h, w) normalized for L1 loss
         :return:
         """
-        # loss_box = torch.tensor(0.).cuda()
+        # loss_box device-agnostic
         if type == 'L1':
             loss_bbox = F.l1_loss(pred_box, gt_box, reduction='none')  # element-wise L1 loss
         elif type == 'L2':
@@ -252,7 +252,7 @@ class BoxLoss(nn.Module):
 
         neg_weights = torch.pow(1 - gt, 4)
 
-        loss = torch.tensor(0.).cuda()
+        loss = torch.tensor(0., device=pred.device)
 
         pos_loss = torch.log(pred) * torch.pow(1 - pred, 2) * pos_inds
         neg_loss = torch.log(1 - pred) * torch.pow(pred, 2) * neg_weights * neg_inds

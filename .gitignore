@@ -9,7 +9,7 @@ visualize/
 detectron2/
 detrex/
 wandb/
-pretrain_weights
+pretrain_weights/
 data/
 data
 .vscode/

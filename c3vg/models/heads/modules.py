@@ -100,7 +100,8 @@ class QueryAugment(nn.Module):
         # ! query 2 text cross attention
         query_embed_input = self.query_embed.weight.unsqueeze(0).repeat(lan_feat.shape[0], 1, 1).transpose(0, 1)
         query_embed_input = box_feat + query_embed_input
-        text_pos_embed = self.position_embedding_1d(lan_feat).unsqueeze(0).repeat(lan_feat.shape[0], 1, 1).permute(1, 0, 2).cuda()
+        device = lan_feat.device
+        text_pos_embed = self.position_embedding_1d(lan_feat).unsqueeze(0).repeat(lan_feat.shape[0], 1, 1).permute(1, 0, 2).to(device)
         text_feat_input = lan_feat.transpose(0, 1)
         query_embed = self.query2text_crossattn(
             query=torch.zeros_like(query_embed_input),
@@ -140,7 +141,7 @@ class BoxSegPooler(nn.Module):
         # ROI Align
         # bbox_feat = self.box_align(img_feat, [bbox_x1y1x2y2])
         # ROI Pooling
-        batch_indices = torch.arange(B).unsqueeze(1).cuda()
+        batch_indices = torch.arange(B, device=img_feat.device).unsqueeze(1)
         rois = torch.cat([batch_indices, bbox_x1y1x2y2], dim=1).float()
         bbox_feat = roi_pool(img_feat, rois, output_size=(1, 1))
         # avg pooling
@@ -422,7 +423,8 @@ class UnifiedInteractionModule(nn.Module):
         box_mask = image_feat.new_ones((bs, input_img_h, input_img_w)) * weights[0]
         for idx in range(bs):
             bbox = xywh_to_x1y1x2y2(box[idx])
-            x1, y1, x2, y2 = bbox * torch.tensor([input_img_w, input_img_h, input_img_w, input_img_h]).cuda()
+            scale_tensor = torch.tensor([input_img_w, input_img_h, input_img_w, input_img_h], device=image_feat.device)
+            x1, y1, x2, y2 = bbox * scale_tensor
             x1, y1, x2, y2 = x1.floor().int(), y1.floor().int(), x2.ceil().int(), y2.ceil().int()
             x1.clamp_(0, input_img_w)
             y1.clamp_(0, input_img_h)

@@ -14,7 +14,8 @@ from .projection import Projector
 
 
 def seg_loss(input, target):
-    weight = torch.FloatTensor([0.9, 1.1]).cuda()
+    device = input.device if isinstance(input, torch.Tensor) else torch.device('cpu')
+    weight = torch.tensor([0.9, 1.1], dtype=torch.float32, device=device)
     return nn.functional.cross_entropy(input, target.long(), weight=weight)
 
 
@@ -94,7 +95,8 @@ class UnetHead(nn.Module):
         self.predict_head = PredictHead(predict_head, fpn_output_channels, fpn=fpn)
 
     def forward_train(self, x, targets, cls_feat=None, lan_feature=None, lan_mask=None):
-        target_mask = torch.from_numpy(np.concatenate([maskUtils.decode(target)[None] for target in targets])).cuda()
+        device = x.device
+        target_mask = torch.from_numpy(np.concatenate([maskUtils.decode(target)[None] for target in targets])).to(device)
         input_shape = target_mask.shape[-2:]
 
         if self.fpn_name == "None":
