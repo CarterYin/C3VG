@@ -85,3 +85,67 @@ python demo.py \
   --checkpoint /home/yinchao/C3VG/pretrain_weights/model.pth \
   --device cpu
 ```
+
+```bash
+python demo.py \
+  --input_image_path /home/yinchao/C3VG/images/boat.jpg \
+  --prompt "a boat" \
+  --output_image_path /home/yinchao/C3VG/vis/vis_boat.jpg \
+  --config /home/yinchao/C3VG/configs/C3VG-Mix.py \
+  --checkpoint /home/yinchao/C3VG/pretrain_weights/model.pth \
+  --device cpu
+```
+
+```bash
+python demo.py \
+  --input_image_path /home/yinchao/C3VG/images/eagle.jpg \
+  --prompt "a eagle" \
+  --output_image_path /home/yinchao/C3VG/vis/vis_eagle.jpg \
+  --config /home/yinchao/C3VG/configs/C3VG-Mix.py \
+  --checkpoint /home/yinchao/C3VG/pretrain_weights/model.pth \
+  --device cpu
+```
+
+```bash
+python demo.py \
+  --input_image_path /home/yinchao/C3VG/images/mountain.jpg \
+  --prompt "a mountain" \
+  --output_image_path /home/yinchao/C3VG/vis/vis_mountain.jpg \
+  --config /home/yinchao/C3VG/configs/C3VG-Mix.py \
+  --checkpoint /home/yinchao/C3VG/pretrain_weights/model.pth \
+  --device cpu
+```
+
+
+## 运行结果示例图
+
+<table>
+  <thead>
+    <tr>
+      <th>原图</th>
+      <th>可视化</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><img src="images/dog.jpg" width="360" /></td>
+      <td><img src="vis/vis_dog.jpg" width="360" /></td>
+    </tr>
+    <tr>
+      <td><img src="images/dear.jpg" width="360" /></td>
+      <td><img src="vis/vis_dear.jpg" width="360" /></td>
+    </tr>
+    <tr>
+      <td><img src="images/boat.jpg" width="360" /></td>
+      <td><img src="vis/vis_boat.jpg" width="360" /></td>
+    </tr>
+    <tr>
+      <td><img src="images/eagle.jpg" width="360" /></td>
+      <td><img src="vis/vis_eagle.jpg" width="360" /></td>
+    </tr>
+    <tr>
+      <td><img src="images/mountain.jpg" width="360" /></td>
+      <td><img src="vis/vis_mountain.jpg" width="360" /></td>
+    </tr>
+  </tbody>
+</table>
